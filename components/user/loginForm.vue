@@ -18,6 +18,7 @@
 
 <script>
 export default {
+  components: {},
   data() {
     return {
       // 表单数据
@@ -54,7 +55,9 @@ export default {
             method: "post",
             data: this.form
           }).then(res => {
-            console.log(res.data);
+            // const data = res.data;
+            this.$store.commit("user/setUserInfo", res.data);
+            this.$router.push("/");
           });
         }
       });
