@@ -5,8 +5,8 @@
 
       <div class="flights-content">
         <!-- 过滤条件 -->
-
-        <FlightsTop :data="flightsData" />
+        <!--此时的  copyFlightsData 为copy的总数据-->
+        <FlightsTop :data="copyFlightsData" @getDataList="getDataList" />
 
         <!-- 航班头部布局 -->
         <FlightsHeader />
@@ -28,6 +28,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <FlightsAside />
       </div>
     </el-row>
   </section>
@@ -38,15 +39,22 @@ import moment from "moment";
 import FlightsHeader from "@/components/air/flightsHeader";
 import FlightsItem from "@/components/air/flightsItem";
 import FlightsTop from "@/components/air/flightsTop";
+import FlightsAside from "@/components/air/flightsAside";
 
 export default {
   components: {
     FlightsHeader,
     FlightsItem,
-    FlightsTop
+    FlightsTop,
+    FlightsAside
   },
   data() {
     return {
+      copyFlightsData: {
+        flights: [],
+        info: {},
+        options: {}
+      },
       flightsData: {
         flights: [],
         info: {},
@@ -77,8 +85,13 @@ export default {
       this.getDataList();
     },
     // 获取分页的数据
-    getDataList() {
-      // 修改dataList的数据 //0 | 2 //2 | 4
+    getDataList(arr) {
+      // 修改dataList的数据 0  2 2 4
+      if (arr) {
+        this.flightsData.flights = arr;
+        this.total = arr.length;
+        this.pageIndex = 1;
+      }
       this.dataList = this.flightsData.flights.slice(
         (this.pageIndex - 1) * this.pageSize,
         (this.pageIndex - 1) * this.pageSize + this.pageSize
@@ -92,6 +105,8 @@ export default {
         params: this.$route.query
       }).then(res => {
         this.flightsData = res.data;
+        // copy 一份数据留于保存,后期作用
+        this.copyFlightsData = { ...res.data };
         this.total = this.flightsData.flights.length;
         this.dataList = this.flightsData.flights.slice(0, 2);
       });
